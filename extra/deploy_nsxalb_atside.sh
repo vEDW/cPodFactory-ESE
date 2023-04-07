@@ -23,6 +23,9 @@ source ./extra/functions.sh
 
 ### Local vars ####
 
+#check params
+params_validator "HOSTNAME_NSXALB IP_NSXALBMGR NSXALBOVA"
+
 HOSTNAME=${HOSTNAME_NSXALB}
 FQDN=${HOSTNAME_NSXALB}.${DOMAIN}
 IP=${IP_NSXALBMGR}
