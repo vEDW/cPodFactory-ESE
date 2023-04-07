@@ -34,11 +34,7 @@ fi
 
 ### functions ####
 
-add_to_cpodrouter_hosts() {
-	echo "add ${1} -> ${2}"
-	ssh -o LogLevel=error ${CPOD_NAME_LOWER} "sed "/${1}/d" -i /etc/hosts ; printf \"${1}\\t${2}\\n\" >> /etc/hosts"
-	ssh -o LogLevel=error ${CPOD_NAME_LOWER} "systemctl restart dnsmasq.service"
-}
+source ./extra/functions.sh
 
 ### Local vars ####
 
@@ -106,15 +102,12 @@ sed -i -e "s=###ALB-OVA###=${ovafilewithpath}=" ${SCRIPT}
 sed -i -e "s/###DATACENTER###/${NAME_HIGHER}/" ${SCRIPT}
 sed -i -e "s/###DOMAIN###/${DOMAIN}/" ${SCRIPT}
 
-
 docker run --interactive --tty --dns=${DNS} --entrypoint="/usr/bin/pwsh" -v /tmp/scripts:/tmp/scripts -v /data/BITS:/tmp/BITS vmware/powerclicore:12.4 ${SCRIPT}
 #rm -fr ${SCRIPT}
 
-
-
 echo "Adding entries into hosts of ${NAME_LOWER}."
-add_to_cpodrouter_hosts "10.${VLAN}.1.10" "nsxalb01"
-
+add_entry_cpodrouter_hosts "10.${VLAN}.1.10" "nsxalb01" ${NAME_LOWER}
+restart_cpodrouter_dnsmasq ${NAME_LOWER}
 
 END=$( date +%s )
 TIME=$( expr ${END} - ${START} )

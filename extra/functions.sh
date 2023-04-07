@@ -141,3 +141,21 @@ add_cpod_ssh_key_to_edge_know_hosts() {
         #add key to known hosts
         echo "${KEY}" >> ~/.ssh/known_hosts
 }
+
+params_validator(){
+        # $1 = array of parameters to validate
+        # example : params_validator (param1 param2 .... paramx)
+        [[ $@ == "" ]] && echo 'usage: params_validator "array of params"' && exit 1
+        PARAMS=($@)
+        [[ ${#PARAMS[@]} = 0 ]] && echo "empty params array" && exit 1
+        MISSINGPARAMS=()
+        for i in ${!PARAMS[@]}; do
+                idx=$(($i-1))    
+                echo "${PARAMS[$idx]} : ${!PARAMS[$idx]}"
+                [[ ${!PARAMS[$idx]} == "" ]] && MISSINGPARAMS+=(${PARAMS[$idx]})
+        done
+        if [[ ${#MISSINGPARAMS[@]} > 0 ]]; then
+                echo "Missing Params : ${MISSINGPARAMS[@]} "
+                exit 1
+        fi
+}

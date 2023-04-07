@@ -41,12 +41,9 @@ fi
 
 PASSWORD=$( ./${EXTRA_DIR}/passwd_for_cpod.sh ${1} )
 
+### functions ####
 
-
-add_to_cpodrouter_hosts() {
-	echo "add ${1} -> ${2}"
-	ssh -o LogLevel=error ${NAME_LOWER} "sed "/${1}/d" -i /etc/hosts ; printf \"${1}\\t${2}\\n\" >> /etc/hosts"
-}
+source ./extra/functions.sh
 
 function print_help()
 {
@@ -323,8 +320,9 @@ vi://$host_username:${PASSWORD}@$host_ip/$host_datacenter/host/$host_cluster"
 #shift $((OPTIND-1))
 #[ "$1" = "--" ] && shift
 
-add_to_cpodrouter_hosts "${IP_NSXMGR}" "${HOSTNAME_NSX}"
-add_to_cpodrouter_hosts "${IP_NSXEDGE}" "${HOSTNAME_NSXEDGE}"
+add_entry_cpodrouter_hosts "${IP_NSXMGR}" "${HOSTNAME_NSX}" ${CPOD_NAME_LOWER}
+add_entry_cpodrouter_hosts "${IP_NSXEDGE}" "${HOSTNAME_NSXEDGE}" ${CPOD_NAME_LOWER}
+restart_cpodrouter_dnsmasq ${CPOD_NAME_LOWER}
 
 echo ""
 echo "Installing NSX"
